@@ -133,7 +133,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
       }`}
       style={{ overflowWrap: 'anywhere' }}
     >
-      <div className="relative m-auto flex p-4 text-base md:max-w-2xl md:gap-6 md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
+      <div className="relative m-auto flex flex-wrap p-4 text-base md:max-w-2xl md:gap-6 md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
         <div className="min-w-[40px] text-right font-bold">
           {message.role === 'assistant' ? (
             <IconRobot size={30} />
@@ -284,6 +284,12 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
             </div>
           )}
         </div>
+        {message.ttft && (
+          <div className="basis-full text-xs text-gray-500 dark:text-gray-400">
+            <hr className='my-1 border-none bg-gray-400 h-0.5'/>
+            TTFT: {message.ttft?.toFixed(1)} seconds | TPS: {message.tps?.toFixed(0)} tokens/second
+          </div>
+        )}
       </div>
     </div>
   );
