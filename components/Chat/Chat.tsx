@@ -33,6 +33,7 @@ import { ModelSelect } from './ModelSelect';
 import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
+import {encode} from "gpt-tokenizer";
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -115,6 +116,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               ?.requiredKeys.find((key) => key.key === 'GOOGLE_CSE_ID')?.value,
           });
         }
+
+        const t0 = Date.now();
+        let t1 = Date.now();
+
         const controller = new AbortController();
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -164,6 +169,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             text += chunkValue;
             if (isFirst) {
               isFirst = false;
+              t1 = Date.now();
               const updatedMessages: Message[] = [
                 ...updatedConversation.messages,
                 { role: 'assistant', content: chunkValue },
@@ -197,6 +203,38 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               });
             }
           }
+
+          const lastMessage =
+            updatedConversation.messages[
+              updatedConversation.messages.length - 1
+            ];
+
+          // Calculate token count, TTFT, and TPS
+          const tokenCount = encode(lastMessage.content).length;
+          const ttft = (t1 - t0) / 1000;
+          const tps = Math.round(tokenCount / ((Date.now() - t1) / 1000));
+
+          // Update the last message with TTFT and TPS
+          lastMessage.ttft = ttft;
+          lastMessage.tps = tps;
+
+          // Update the conversation messages
+          const updatedMessages = updatedConversation.messages.map(
+            (message, index) =>
+              index === updatedConversation.messages.length - 1
+                ? { ...message }
+                : message,
+          );
+
+          // Dispatch the updated conversation
+          homeDispatch({
+            field: 'selectedConversation',
+            value: {
+              ...updatedConversation,
+              messages: updatedMessages,
+            },
+          });
+
           saveConversation(updatedConversation);
           const updatedConversations: Conversation[] = conversations.map(
             (conversation) => {
