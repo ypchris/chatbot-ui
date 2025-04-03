@@ -29,10 +29,11 @@ import Spinner from '../Spinner';
 import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
+import { MaxTokensSlider } from './MaxTokens';
+import { MemoizedChatMessage } from './MemoizedChatMessage';
 import { ModelSelect } from './ModelSelect';
 import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
-import { MemoizedChatMessage } from './MemoizedChatMessage';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -99,6 +100,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           key: apiKey,
           prompt: updatedConversation.prompt,
           temperature: updatedConversation.temperature,
+          maxTokens: updatedConversation.maxTokens,
         };
         const endpoint = getEndpoint(plugin);
         let body;
@@ -433,6 +435,15 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           })
                         }
                       />
+                      <MaxTokensSlider
+                        label={t('Max tokens')}
+                        onChangeMaxTokens={(maxTokens) => {
+                          handleUpdateConversation(selectedConversation, {
+                            key: 'maxTokens',
+                            value: maxTokens,
+                          });
+                        }}
+                      />
                     </div>
                   )}
                 </div>
@@ -440,8 +451,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             ) : (
               <>
                 <div className="sticky top-0 z-10 flex justify-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
-                  {t('Model')}: {selectedConversation?.model?.name} | {t('Temp')}
-                  : {selectedConversation?.temperature} |
+                  {t('Model')}: {selectedConversation?.model?.name} |{' '}
+                  {t('Temp')}: {selectedConversation?.temperature} |
                   <button
                     className="ml-2 cursor-pointer hover:opacity-50"
                     onClick={handleSettings}

@@ -8,6 +8,9 @@ export const OPENAI_API_HOST =
 export const DEFAULT_TEMPERATURE = 
   parseFloat(process.env.NEXT_PUBLIC_DEFAULT_TEMPERATURE || "1");
 
+export const DEFAULT_MAX_TOKENS =
+  parseInt(process.env.NEXT_PUBLIC_DEFAULT_MAX_TOKENS || "1024", 10);
+
 export const OPENAI_API_TYPE =
   process.env.OPENAI_API_TYPE || 'openai';
 

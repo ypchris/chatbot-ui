@@ -27,6 +27,7 @@ export const OpenAIStream = async (
   model: OpenAIModel,
   systemPrompt: string,
   temperature : number,
+  maxTokens: number,
   key: string,
   messages: Message[],
 ) => {
@@ -57,7 +58,7 @@ export const OpenAIStream = async (
         },
         ...messages,
       ],
-      max_tokens: 2048,
+      max_tokens: maxTokens,
       temperature: temperature,
       stream: true,
     }),
